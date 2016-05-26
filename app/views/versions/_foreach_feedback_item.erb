@@ -1,0 +1,21 @@
+<%log_count = feedbacks.length%>
+<%feedbacks.reverse().each_with_index do |f, idx|%>
+    <%left = (idx%2 == 0)%>
+    <div class="chat-message">
+      <div class="sender <%= left ? "pull-left": "pull-right" %>">
+        <div class="icon">
+          <img src="/images/<%=(idx%3)+1%>.png" class="img-circle" alt="">
+        </div>
+        <div class="time">
+          <%=to_fbdate(f.created_at)%>
+        </div>
+      </div>
+      <div class="chat-message-body <%= left ? "":"on-left" %>">
+        <span class="arrow"></span>
+        <div class="sender"><a href="#">#<%= log_count - idx%></a></div>
+        <div class="text">
+          <%=f.message%>
+        </div>
+      </div>
+    </div>
+<%end%>

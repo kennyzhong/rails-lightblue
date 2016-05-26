@@ -1,0 +1,162 @@
+<div class="col-lg-12">
+  <section class="widget">
+    <header>
+      <h4>
+        Feedback
+      </h4>
+      <div class="widget-controls dropdown">
+         <span>
+            <i class="fa fa-spinner fa-lg fade"></i>
+        </span>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          <i class="fa fa-cog"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-right">
+          <li>
+            <a data-widgster="load" title="Reload" href="#">Reload
+              &nbsp;&nbsp;<span class="badge background-success animated bounceIn"><strong>9</strong></span>
+            </a>
+          </li>
+          <li>
+            <a data-widgster="fullscreen" title="Full Screen" href="#">Fullscreen</a>
+            <a data-widgster="restore" title="Restore" href="#">Restore</a>
+          </li>
+          <li class="divider"></li>
+          <li><a data-widgster="close" title="Close" href="#">Close</a></li>
+        </ul>
+      </div>
+    </header>
+    <div class="body">
+      <div id="chat" class="chat">
+        <div id="chat-messages" class="chat-messages">
+          <%=render :partial => "foreach_feedback_item", :locals => {:feedbacks => @feedbacks}%>
+        </div>
+        <%=
+            form_tag(feedback_version_path(:id => params[:id], :format=>"text"), id: 'feedback-form') do |f|
+        %>
+            <input type="hidden" name="status_id" id="message-status"/>
+        <footer class="chat-footer1 row" style="margin-top:5px;">
+          <div class="col-xs-9">
+            <input id="new-message" type="text" class="form-control input-transparent required" placeholder="Enter your message.." name="message">
+          </div>
+          <div class="col-xs-3">
+            <button type="submit" class="btn btn-transparent btn-block">Send</button>
+          </div>
+
+          <div class="feed col-xs-12" style="margin-top:5px;">
+            <div class="wrapper" style="background-color: rgba(255, 255, 255, 0.2);"  id="feedback-templates">
+              <div class="vertical-line"></div>
+              <section class="feed-item">
+                <div class="icon pull-left">
+                  <i class="fa fa-bug color-red"></i>
+                </div>
+                <div class="feed-item-body">
+                  <div class="text">
+                    <a href="javascript:void(0)" status_id="1">上机要crash，不要下载安装了</a>.
+                  </div>
+                </div>
+              </section>
+              <section class="feed-item">
+                <div class="icon pull-left">
+                  <i class="fa fa-exclamation-triangle color-red-dark"></i>
+                </div>
+                <div class="feed-item-body">
+                  <div class="text">
+                    <a href="javascript:void(0)" status_id="2">下载不了</a>.
+                  </div>
+                </div>
+              </section>
+              <section class="feed-item">
+                <div class="icon pull-left">
+                  <i class="fa fa-check-square color-green"></i>
+                </div>
+                <div class="feed-item-body">
+                  <div class="text">
+                    <a href="javascript:void(0)" status_id="0">正常运行</a>.
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+
+        </footer>
+        <%end%>
+      </div>
+    </div>
+  </section>
+
+  <section class="widget">
+    <header>
+      <h4>
+        Content
+        <span class="label label-success"><%=@logs.length%></span>
+      </h4>
+      <div class="actions">
+        <button class="btn btn-transparent btn-xs">Show All <i class="fa fa-arrow-down"></i></button>
+      </div>
+    </header>
+    <div class="body">
+      <div id="feed" class="feed">
+        <div class="wrapper">
+          <div class="vertical-line"></div>
+          <%@logs.reverse().each do |log|%>
+          <section class="feed-item">
+            <div class="icon pull-left">
+              <i class="fa fa-check color-green"></i>
+            </div>
+            <div class="feed-item-body">
+              <div class="text">
+                <a href="#"><%=log.author%></a> =>  <%=log.message%>
+              </div>
+              <div class="time pull-left">
+                <%=to_fbdate(log.committed_at)%>
+              </div>
+            </div>
+          </section>
+          <%end%>
+
+          <section class="feed-item <%= @logs.length > 10 ? "": "hidden"%>">
+            <div class="icon pull-left">
+              <i class="fa fa-arrow-down"></i>
+            </div>
+            <div class="feed-item-body">
+              <div class="text">
+                <a href="#">Load more...</a>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  $(function(){
+      $("#feedback-form").validate({
+          submitHandler: function (form) {
+              var f= $(form);
+              //alert(f.serialize());
+              $.ajax({
+                  url: form.action,
+                  type: "post",
+                  dataType: "text",
+                  data: f.serialize(),
+                  success: function(data, textStatus){
+                      $("#new-message").val("");
+                      $("#message-status").val("");
+                      $("#chat-messages").html(data);
+                  }
+              });
+          }
+      });
+
+      $("#feedback-templates a").click(function(){
+          var new_message = $("#new-message");
+          if(new_message.val() == "") {
+              new_message.val($(this).text());
+              $("#message-status").val($(this).attr("status_id"));
+          }
+      })
+  })
+</script>

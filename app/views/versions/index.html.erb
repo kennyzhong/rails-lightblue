@@ -1,0 +1,49 @@
+<div class="col-lg-12">
+  <section class="widget widget-tabs">
+    <header>
+      <ul class="nav nav-tabs">
+        <%@tags.each do |tag|%>
+        <li class="<%= @current_tag == tag ? "active": ""%>">
+          <a href="<%=versions_url(:tag => tag)%>" ><%=t("version_#{tag}")%></a>
+        </li>
+        <%end%>
+      </ul>
+    </header>
+    <%now = Time.now.to_i()%>
+    <%url = (@current_tag == :ios ? "itms-services://?action=download-manifest&url=": "")%>
+    <div class="body tab-content">
+      <div class="tab-pane active clearfix">
+
+        <ul class="news-list">
+          <%@jobs.each do |job| %>
+          <li>
+            <span class="pull-left img-circle"><%=job.svn_revision%></span>
+
+            <div class="news-item-info">
+              <div class="name"><a href="<%=job.job_url%>/<%=job.build_number%>/console">出包任务 #<%=job.build_number%></a></div>
+              <div class="progress progress-small">
+                <div class="progress-bar progress-bar-inverse" style="width: <%=((now - job.started_ts)*10000/job.last_timecost).to_i / 100.0%>%;"></div>
+              </div>
+              <div class="position">Power by <%=job.alias%></div>
+            </div>
+
+          </li>
+          <%end%>
+          <%@clients.each do |client1| %>
+          <li>
+            <span class="pull-left img-circle"><%=client1.svn_revision%></span>
+
+            <a href="<%=url%><%=client1.app_url%>">
+              <img src="images/<%= client1.status == 0 ? "leech-icon": "warning"%>.png" alt="" class="pull-right img-circle "/></a>
+            <div class="news-item-info">
+              <div class="name"><a href="<%=version_url(:id =>client1.id )%>"><%=client1.app_name%></a></div>
+              <div class="time1"><%=to_fbdate(client1.created_at)%></div>
+              <div class="position"><%=client1.job.alias%></div>
+            </div>
+          </li>
+          <%end%>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
