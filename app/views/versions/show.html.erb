@@ -129,6 +129,76 @@
       </div>
     </div>
   </section>
+
+  <section class="widget">
+    <header>
+      <h5>DLC <span class="fw-semi-bold">Key</span></h5>
+      <div class="widget-controls">
+        <a href="#"><i class="glyphicon glyphicon-cog"></i></a>
+      </div>
+    </header>
+    <div class="body">
+      <p>
+        <code>点击IP可以设置DLC Key,避免手动填写错误</code></p>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr >
+            <th>#</th>
+            <th>IP</th>
+            <th>Name</th>
+          </tr>
+          </thead>
+          <tbody  id="server-messages">
+          <%=render :partial => "foreach_server_item", :locals => {:servers => @servers}%>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="myModal2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <%=
+                form_tag(dlc_key_version_path(:id => params[:id], :format=>"text"), id: 'server-form', :class=>"form-horizontal", :role=>"form" ) do |f|
+            %>
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+              <h4 class="modal-title" id="myModalLabel2">Add Key</h4>
+            </div>
+            <div class="modal-body">
+
+                <fieldset>
+                  <div class="form-group">
+                    <label for="normal-field" class="col-sm-4 control-label">Server IP*</label>
+                    <div class="col-sm-7">
+                      <input type="text" id="tbip" name="server_ip" class="form-control required" placeholder="服务器IP">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="hint-field" class="col-sm-4 control-label">
+                      Server Name
+                    </label>
+                    <div class="col-sm-7">
+                      <input type="text" id="tbname" name="server_name" class="form-control" placeholder="取个名字吧??">
+                    </div>
+                  </div>
+
+                </fieldset>
+
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <input type="submit" class="btn btn-primary" name="server_env" value="FB"></input>
+              <input type="submit" class="btn btn-danger" name="server_env" value="QA"></input>
+            </div>
+            <%end%>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div>
+    </div>
+  </section>
+
 </div>
 
 <script>
@@ -150,6 +220,24 @@
               });
           }
       });
+      $("#server-form").validate({
+          submitHandler: function (form) {
+              var f= $(form);
+              //alert(f.serialize());
+              $.ajax({
+                  url: form.action,
+                  type: "post",
+                  dataType: "text",
+                  data: f.serialize(),
+                  success: function(data, textStatus){
+                      $("#tbname").val("");
+                      $("#tbip").val("");
+                      $("#server-messages").html(data);
+                      $('#myModal2').modal('toggle');
+                  }
+              });
+          }
+      });
 
       $("#feedback-templates a").click(function(){
           var new_message = $("#new-message");
@@ -159,4 +247,8 @@
           }
       })
   })
+        function set_server_form(ip, name){
+            $("#tbip").val(ip);
+            $("#tbname").val(name);
+        }
 </script>

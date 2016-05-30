@@ -1,0 +1,7 @@
+<%servers.each_with_index do |s, idx|%>
+    <tr>
+      <td><%=idx + 1%></td>
+      <td><a href="#javascript:void(0);" onclick="set_server_form('<%=s.server_ip%>', '<%=s.server_name%>')" data-toggle="modal" data-target="#myModal2" data-backdrop="static"><%=s.server_ip%></a></td>
+      <td><span class="badge bg-gray-lighter text-gray-light"><%=s.server_name%></span></td>
+    </tr>
+<%end%>
